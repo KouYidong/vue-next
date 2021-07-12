@@ -556,10 +556,14 @@ export function setupComponent(
   isInSSRComponentSetup = isSSR
 
   const { props, children } = instance.vnode
+  /**
+   * 判断是不是状态组件（在 createApp 传入的是一个对象的时候就是状态组件，如果传入的是一个 function 则不是状态组件）
+   */
   const isStateful = isStatefulComponent(instance)
   initProps(instance, props, isStateful, isSSR)
   initSlots(instance, children)
 
+  // 因为我们的是状态组件，所以执行 setupStatefulComponent
   const setupResult = isStateful
     ? setupStatefulComponent(instance, isSSR)
     : undefined
@@ -567,6 +571,12 @@ export function setupComponent(
   return setupResult
 }
 
+/**
+ * 状态组件的处理
+ * @param instance 
+ * @param isSSR 
+ * @returns 
+ */
 function setupStatefulComponent(
   instance: ComponentInternalInstance,
   isSSR: boolean
@@ -650,7 +660,9 @@ function setupStatefulComponent(
     } else {
       handleSetupResult(instance, setupResult, isSSR)
     }
-  } else {
+  } 
+  // 完成组件安装
+  else {
     finishComponentSetup(instance, isSSR)
   }
 }
@@ -738,7 +750,9 @@ export function finishComponentSetup(
     instance.render = (instance.render ||
       Component.render ||
       NOOP) as InternalRenderFunction
-  } else if (!instance.render) {
+  } 
+  // 如果没有渲染函数则通过编译器编译一个
+  else if (!instance.render) {
     // could be set from setup()
     if (compile && !Component.render) {
       const template =
