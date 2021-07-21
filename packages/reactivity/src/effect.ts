@@ -154,6 +154,7 @@ export function resetTracking() {
 }
 
 export function track(target: object, type: TrackOpTypes, key: unknown) {
+  // 只有通过 effect 方法才会收集依赖
   if (!shouldTrack || activeEffect === undefined) {
     return
   }
