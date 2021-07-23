@@ -279,9 +279,9 @@ export function createAppAPI<HostElement>(
       /**
        * 将根组件进行挂载
        * @param rootContainer 执行 mount 时传入的主容器
-       * @param isHydrate
-       * @param isSVG
-       * @returns
+       * @param isHydrate 
+       * @param isSVG 
+       * @returns 
        */
       mount(
         rootContainer: HostElement,

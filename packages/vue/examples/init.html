@@ -6,17 +6,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
 </head>
+
 <body>
   <div id="app">
-    <h1>init</h1>
+    <h1>{{data.a}}</h1>
   </div>
 
   <script src="../dist/vue.global.js"></script>
   <script>
-    const {createApp} = Vue
+    const { createApp, reactive } = Vue
+
+    debugger
+
+    const data = reactive({
+      a: 1,
+      b: 2
+    })
+
+    debugger
+    // data.a = 2
+    console.log(data.a)
+
     // vue2: new Vue()
     // vue3: createApp
-    createApp({}).mount('#app')
+    // createApp({
+    //   data
+    // }).mount('#app')
   </script>
 </body>
+
 </html>

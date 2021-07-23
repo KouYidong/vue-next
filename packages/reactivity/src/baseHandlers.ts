@@ -81,6 +81,7 @@ function createArrayInstrumentations() {
 
 function createGetter(isReadonly = false, shallow = false) {
   return function get(target: Target, key: string | symbol, receiver: object) {
+    debugger
     if (key === ReactiveFlags.IS_REACTIVE) {
       return !isReadonly
     } else if (key === ReactiveFlags.IS_READONLY) {
@@ -102,12 +103,20 @@ function createGetter(isReadonly = false, shallow = false) {
 
     const targetIsArray = isArray(target)
 
+    /**
+     * 为了解决一个边缘情况:
+     * const obj = {}
+     * const arr = reactive([obj])
+     * arr.indexOf(obj) // -1
+     * 正常情况下应该返回的是 0
+     */
     if (!isReadonly && targetIsArray && hasOwn(arrayInstrumentations, key)) {
       return Reflect.get(arrayInstrumentations, key, receiver)
     }
 
     const res = Reflect.get(target, key, receiver)
 
+    // 关于 symbol 的处理
     if (isSymbol(key) ? builtInSymbols.has(key) : isNonTrackableKeys(key)) {
       return res
     }
@@ -116,6 +125,7 @@ function createGetter(isReadonly = false, shallow = false) {
       track(target, TrackOpTypes.GET, key)
     }
 
+    // 浅层
     if (shallow) {
       return res
     }
@@ -147,10 +157,13 @@ function createSetter(shallow = false) {
     value: unknown,
     receiver: object
   ): boolean {
+    debugger
     let oldValue = (target as any)[key]
+    // 不是浅层对象
     if (!shallow) {
       value = toRaw(value)
       oldValue = toRaw(oldValue)
+      // oldValue 是 ref 但 newValue 不是 ref 的情况
       if (!isArray(target) && isRef(oldValue) && !isRef(value)) {
         oldValue.value = value
         return true

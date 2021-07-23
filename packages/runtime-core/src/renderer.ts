@@ -478,20 +478,20 @@ function baseCreateRenderer(
   } = options
 
   /**
-   * Note: functions inside this closure should use `const xxx = () => {}`
+   * Note: functions inside this closure should use `const xxx = () => {}` 
    * style in order to prevent being inlined by minifiers.
    * @param n1 旧 vnode
    * @param n2 新 vnode
-   * @param container
-   * @param anchor
-   * @param parentComponent
-   * @param parentSuspense
-   * @param isSVG
-   * @param slotScopeIds
-   * @param optimized
+   * @param container 
+   * @param anchor 
+   * @param parentComponent 
+   * @param parentSuspense 
+   * @param isSVG 
+   * @param slotScopeIds 
+   * @param optimized 
    */
   const patch: PatchFn = (
-    n1,
+    n1, 
     n2,
     container,
     anchor = null,
@@ -781,7 +781,7 @@ function baseCreateRenderer(
       // exactly the same, and we can simply do a clone here.
       // only do this in production since cloned trees cannot be HMR updated.
       el = vnode.el = hostCloneNode(vnode.el)
-    }
+    } 
     // 创建流程
     else {
       // 这里的 hostCreateElement 就是 createElement 方法
@@ -1312,7 +1312,7 @@ function baseCreateRenderer(
           isSVG,
           optimized
         )
-      }
+      } 
       // 挂载流程
       else {
         mountComponent(
@@ -1325,7 +1325,7 @@ function baseCreateRenderer(
           optimized
         )
       }
-    }
+    } 
     // 更新流程
     else {
       updateComponent(n1, n2, optimized)
@@ -2421,7 +2421,7 @@ function baseCreateRenderer(
       if (container._vnode) {
         unmount(container._vnode, null, null, true)
       }
-    }
+    } 
     // 更新
     else {
       patch(container._vnode || null, vnode, container, null, null, null, isSVG)

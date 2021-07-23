@@ -573,9 +573,9 @@ export function setupComponent(
 
 /**
  * 状态组件的处理
- * @param instance
- * @param isSSR
- * @returns
+ * @param instance 
+ * @param isSSR 
+ * @returns 
  */
 function setupStatefulComponent(
   instance: ComponentInternalInstance,
@@ -660,7 +660,7 @@ function setupStatefulComponent(
     } else {
       handleSetupResult(instance, setupResult, isSSR)
     }
-  }
+  } 
   // 完成组件安装
   else {
     finishComponentSetup(instance, isSSR)
@@ -750,7 +750,7 @@ export function finishComponentSetup(
     instance.render = (instance.render ||
       Component.render ||
       NOOP) as InternalRenderFunction
-  }
+  } 
   // 如果没有渲染函数则通过编译器编译一个
   else if (!instance.render) {
     // could be set from setup()
