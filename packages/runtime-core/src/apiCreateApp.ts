@@ -167,21 +167,30 @@ export type CreateAppFunction<HostElement> = (
 
 let uid = 0
 
+/**
+ * 返回 vue 实例的创建函数
+ * @param render
+ * @param hydrate
+ * @returns
+ */
 export function createAppAPI<HostElement>(
   render: RootRenderFunction,
   hydrate?: RootHydrateFunction
 ): CreateAppFunction<HostElement> {
+  // rootComponent 用户传入的根组件对象
   return function createApp(rootComponent, rootProps = null) {
     if (rootProps != null && !isObject(rootProps)) {
       __DEV__ && warn(`root props passed to app.mount() must be an object.`)
       rootProps = null
     }
 
+    // 创建上下文，用来存放参数的对象
     const context = createAppContext()
     const installedPlugins = new Set()
 
     let isMounted = false
 
+    // vue 实例
     const app: App = (context.app = {
       _uid: uid++,
       _component: rootComponent as ConcreteComponent,
@@ -267,12 +276,21 @@ export function createAppAPI<HostElement>(
         return app
       },
 
+      /**
+       * 将根组件进行挂载
+       * @param rootContainer 执行 mount 时传入的主容器
+       * @param isHydrate
+       * @param isSVG
+       * @returns
+       */
       mount(
         rootContainer: HostElement,
         isHydrate?: boolean,
         isSVG?: boolean
       ): any {
+        // 初始化流程
         if (!isMounted) {
+          // 创建一个空的 vnode
           const vnode = createVNode(
             rootComponent as ConcreteComponent,
             rootProps
@@ -291,6 +309,10 @@ export function createAppAPI<HostElement>(
           if (isHydrate && hydrate) {
             hydrate(vnode as VNode<Node, Element>, rootContainer as any)
           } else {
+            /**
+             * 把传入的 vnode 转换成一个真实 DOM 并渲染至 rootContainer.
+             * 这里的 render 并不等于组建中用到的 render 函数，这里的是把 vnode 转换成真实 DOM，而组件中的渲染函数是将渲染函数转换成虚拟 DOM
+             */
             render(vnode, rootContainer, isSVG)
           }
           isMounted = true
@@ -303,6 +325,7 @@ export function createAppAPI<HostElement>(
             devtoolsInitApp(app, version)
           }
 
+          // 返回的是组件的一个代理，因为这个组件要变成一个可追踪的响应式对象
           return vnode.component!.proxy
         } else if (__DEV__) {
           warn(

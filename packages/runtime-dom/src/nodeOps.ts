@@ -16,6 +16,7 @@ export const nodeOps: Omit<RendererOptions<Node, Element>, 'patchProp'> = {
     }
   },
 
+  // vnode 转换为 DOM 的方法
   createElement: (tag, isSVG, is, props): Element => {
     const el = isSVG
       ? doc.createElementNS(svgNS, tag)

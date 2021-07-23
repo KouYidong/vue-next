@@ -477,8 +477,19 @@ function baseCreateRenderer(
     insertStaticContent: hostInsertStaticContent
   } = options
 
-  // Note: functions inside this closure should use `const xxx = () => {}`
-  // style in order to prevent being inlined by minifiers.
+  /**
+   * Note: functions inside this closure should use `const xxx = () => {}`
+   * style in order to prevent being inlined by minifiers.
+   * @param n1 旧 vnode
+   * @param n2 新 vnode
+   * @param container
+   * @param anchor
+   * @param parentComponent
+   * @param parentSuspense
+   * @param isSVG
+   * @param slotScopeIds
+   * @param optimized
+   */
   const patch: PatchFn = (
     n1,
     n2,
@@ -502,6 +513,7 @@ function baseCreateRenderer(
       n2.dynamicChildren = null
     }
 
+    // 根据新 vnode 的 type 做相应的类型做相应的操作
     const { type, ref, shapeFlag } = n2
     switch (type) {
       case Text:
@@ -531,6 +543,7 @@ function baseCreateRenderer(
         )
         break
       default:
+        // 任何一个 DOM 节点
         if (shapeFlag & ShapeFlags.ELEMENT) {
           processElement(
             n1,
@@ -543,7 +556,9 @@ function baseCreateRenderer(
             slotScopeIds,
             optimized
           )
-        } else if (shapeFlag & ShapeFlags.COMPONENT) {
+        }
+        // 首次初始化的时候传入的是 component，因为传入的是一个对象(createApp({}))
+        else if (shapeFlag & ShapeFlags.COMPONENT) {
           processComponent(
             n1,
             n2,
@@ -714,6 +729,7 @@ function baseCreateRenderer(
     optimized: boolean
   ) => {
     isSVG = isSVG || (n2.type as string) === 'svg'
+    // 初始化的挂载
     if (n1 == null) {
       mountElement(
         n2,
@@ -725,7 +741,9 @@ function baseCreateRenderer(
         slotScopeIds,
         optimized
       )
-    } else {
+    }
+    // 更新
+    else {
       patchElement(
         n1,
         n2,
@@ -751,6 +769,7 @@ function baseCreateRenderer(
     let el: RendererElement
     let vnodeHook: VNodeHook | undefined | null
     const { type, props, shapeFlag, transition, patchFlag, dirs } = vnode
+    // 更新流程
     if (
       !__DEV__ &&
       vnode.el &&
@@ -762,7 +781,10 @@ function baseCreateRenderer(
       // exactly the same, and we can simply do a clone here.
       // only do this in production since cloned trees cannot be HMR updated.
       el = vnode.el = hostCloneNode(vnode.el)
-    } else {
+    }
+    // 创建流程
+    else {
+      // 这里的 hostCreateElement 就是 createElement 方法
       el = vnode.el = hostCreateElement(
         vnode.type as string,
         isSVG,
@@ -1280,6 +1302,7 @@ function baseCreateRenderer(
     optimized: boolean
   ) => {
     n2.slotScopeIds = slotScopeIds
+    // n1 为 null 标识初始化
     if (n1 == null) {
       if (n2.shapeFlag & ShapeFlags.COMPONENT_KEPT_ALIVE) {
         ;(parentComponent!.ctx as KeepAliveContext).activate(
@@ -1289,7 +1312,9 @@ function baseCreateRenderer(
           isSVG,
           optimized
         )
-      } else {
+      }
+      // 挂载流程
+      else {
         mountComponent(
           n2,
           container,
@@ -1300,13 +1325,16 @@ function baseCreateRenderer(
           optimized
         )
       }
-    } else {
+    }
+    // 更新流程
+    else {
       updateComponent(n1, n2, optimized)
     }
   }
 
+  // 初始化的挂载
   const mountComponent: MountComponentFn = (
-    initialVNode,
+    initialVNode, // 初始化的vnode
     container,
     anchor,
     parentComponent,
@@ -1345,6 +1373,7 @@ function baseCreateRenderer(
       if (__DEV__) {
         startMeasure(instance, `init`)
       }
+      // 设置组件
       setupComponent(instance)
       if (__DEV__) {
         endMeasure(instance, `init`)
@@ -1365,6 +1394,7 @@ function baseCreateRenderer(
       return
     }
 
+    // 渲染函数的响应式
     setupRenderEffect(
       instance,
       initialVNode,
@@ -1427,6 +1457,7 @@ function baseCreateRenderer(
   ) => {
     // create reactive effect for rendering
     instance.update = effect(function componentEffect() {
+      // 未挂载时的初始化流程
       if (!instance.isMounted) {
         let vnodeHook: VNodeHook | null | undefined
         const { el, props } = initialVNode
@@ -1487,6 +1518,7 @@ function baseCreateRenderer(
           if (__DEV__) {
             startMeasure(instance, `render`)
           }
+          // 获取子树的 vnode
           const subTree = (instance.subTree = renderComponentRoot(instance))
           if (__DEV__) {
             endMeasure(instance, `render`)
@@ -1494,6 +1526,7 @@ function baseCreateRenderer(
           if (__DEV__) {
             startMeasure(instance, `patch`)
           }
+          // 转换之前获取的 vnode 为 DOM
           patch(
             null,
             subTree,
@@ -2383,11 +2416,14 @@ function baseCreateRenderer(
   }
 
   const render: RootRenderFunction = (vnode, container, isSVG) => {
+    // 卸载
     if (vnode == null) {
       if (container._vnode) {
         unmount(container._vnode, null, null, true)
       }
-    } else {
+    }
+    // 更新
+    else {
       patch(container._vnode || null, vnode, container, null, null, null, isSVG)
     }
     flushPostFlushCbs()
@@ -2416,6 +2452,12 @@ function baseCreateRenderer(
     >)
   }
 
+  /**
+   * 方法的返回值是一个渲染器，其实就是一个对象，包括三个属性：
+   * 1. render：渲染函数
+   * 2. hydrate：注水，用于 ssr
+   * 3. createApp：实例创建函数
+   */
   return {
     render,
     hydrate,

@@ -32,6 +32,7 @@ let renderer: Renderer<Element> | HydrationRenderer
 
 let enabledHydration = false
 
+// 获取渲染器实例
 function ensureRenderer() {
   return renderer || (renderer = createRenderer<Node, Element>(rendererOptions))
 }
@@ -53,6 +54,7 @@ export const hydrate = ((...args) => {
   ensureHydrationRenderer().hydrate(...args)
 }) as RootHydrateFunction
 
+// 创建 Vue 实例
 export const createApp = ((...args) => {
   const app = ensureRenderer().createApp(...args)
 
@@ -61,6 +63,10 @@ export const createApp = ((...args) => {
     injectCompilerOptionsCheck(app)
   }
 
+  /**
+   * 扩展 mount 方法，使之可以在用户没有设置 render 参数或者 template 选项时，
+   * 可以使用 container 中的 innerHTML 作为 templagte，并挂载到 container 上
+   */
   const { mount } = app
   app.mount = (containerOrSelector: Element | ShadowRoot | string): any => {
     const container = normalizeContainer(containerOrSelector)
