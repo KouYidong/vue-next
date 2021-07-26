@@ -98,10 +98,15 @@ function createReactiveEffect<T = any>(
   options: ReactiveEffectOptions
 ): ReactiveEffect<T> {
   const effect = function reactiveEffect(): unknown {
+    debugger
     if (!effect.active) {
       return fn()
     }
     if (!effectStack.includes(effect)) {
+      /**
+       * 这里清空依赖是为了后续能够只添加这次有需要的依赖
+       * https://juejin.cn/post/6909698939696447496#heading-14 文章中有讲
+       */
       cleanup(effect)
       try {
         enableTracking()
@@ -125,6 +130,7 @@ function createReactiveEffect<T = any>(
   return effect
 }
 
+// 将传入的 effect 中的 deps 清空，后续重新添加依赖
 function cleanup(effect: ReactiveEffect) {
   const { deps } = effect
   if (deps.length) {
