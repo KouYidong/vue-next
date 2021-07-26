@@ -194,6 +194,7 @@ export function trigger(
   oldValue?: unknown,
   oldTarget?: Map<unknown, unknown> | Set<unknown>
 ) {
+  debugger
   const depsMap = targetMap.get(target)
   if (!depsMap) {
     // never been tracked
@@ -257,6 +258,7 @@ export function trigger(
   }
 
   const run = (effect: ReactiveEffect) => {
+    debugger
     if (__DEV__ && effect.options.onTrigger) {
       effect.options.onTrigger({
         effect,
@@ -274,6 +276,6 @@ export function trigger(
       effect()
     }
   }
-
+  debugger
   effects.forEach(run)
 }

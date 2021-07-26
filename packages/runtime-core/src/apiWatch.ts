@@ -316,6 +316,7 @@ function doWatch(
   } else {
     // default: 'pre'
     scheduler = () => {
+      debugger
       if (!instance || instance.isMounted) {
         queuePreFlushCb(job)
       } else {
@@ -349,8 +350,9 @@ function doWatch(
   }
 
   return () => {
-    stop(runner)
+    stop(runner) // 停止当前 effect 的响应
     if (instance) {
+      // 删除实例
       remove(instance.effects!, runner)
     }
   }
