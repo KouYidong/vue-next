@@ -54,6 +54,7 @@ function targetTypeMap(rawType: string) {
 }
 
 function getTargetType(value: Target) {
+  // Object.isExtensible(value): 判断 value 是否可扩展
   return value[ReactiveFlags.SKIP] || !Object.isExtensible(value)
     ? TargetType.INVALID
     : targetTypeMap(toRawType(value))
@@ -90,6 +91,7 @@ export function reactive(target: object) {
   if (target && (target as Target)[ReactiveFlags.IS_READONLY]) {
     return target
   }
+
   // 创建响应对象
   return createReactiveObject(
     target,
@@ -178,6 +180,7 @@ function createReactiveObject(
   collectionHandlers: ProxyHandler<any>,
   proxyMap: WeakMap<Target, any>
 ) {
+  // target 不是 object 类型
   if (!isObject(target)) {
     if (__DEV__) {
       console.warn(`value cannot be made reactive: ${String(target)}`)
