@@ -74,14 +74,25 @@ export function callWithErrorHandling(
   return res
 }
 
+/**
+ * 调用传入的函数
+ * @param fn 函数或者由函数组成的数组
+ * @param instance 当前组件实例
+ * @param type 错误类型
+ * @param args 其他参数
+ * @returns 
+ */
 export function callWithAsyncErrorHandling(
   fn: Function | Function[],
   instance: ComponentInternalInstance | null,
   type: ErrorTypes,
   args?: unknown[]
 ): any[] {
+  // 如果传入的 fn 是函数
   if (isFunction(fn)) {
+    // 将 args 传入 fn 并进行调用，用 try catch 进行错误捕获
     const res = callWithErrorHandling(fn, instance, type, args)
+    // 如果返回的结果是 promise 则进行错误捕获
     if (res && isPromise(res)) {
       res.catch(err => {
         handleError(err, instance, type)
@@ -90,10 +101,12 @@ export function callWithAsyncErrorHandling(
     return res
   }
 
+  // 如果 fn 是一个函数数组，则遍历数组进行递归调用 callWithAsyncErrorHandling 并将返回值 push 到 values 中
   const values = []
   for (let i = 0; i < fn.length; i++) {
     values.push(callWithAsyncErrorHandling(fn[i], instance, type, args))
   }
+  // 返回最终的函数调用结果 array
   return values
 }
 

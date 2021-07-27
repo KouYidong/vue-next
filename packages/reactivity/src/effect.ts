@@ -71,6 +71,7 @@ export function effect<T = any>(
   fn: () => T,
   options: ReactiveEffectOptions = EMPTY_OBJ
 ): ReactiveEffect<T> {
+  // 如果 fn 是一个 effect 则将 fn 改为原始对象
   if (isEffect(fn)) {
     fn = fn.raw
   }
@@ -98,7 +99,6 @@ function createReactiveEffect<T = any>(
   options: ReactiveEffectOptions
 ): ReactiveEffect<T> {
   const effect = function reactiveEffect(): unknown {
-    debugger
     if (!effect.active) {
       return fn()
     }
