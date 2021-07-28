@@ -163,7 +163,7 @@ function createSetter(shallow = false) {
     if (!shallow) {
       value = toRaw(value)
       oldValue = toRaw(oldValue)
-      // oldValue 是 ref 但 newValue 不是 ref 的情况
+      // oldValue 是 ref 但 newValue 不是 ref 的情况，因为已经是 ref 了，所以就不需要再次触发依赖了。
       if (!isArray(target) && isRef(oldValue) && !isRef(value)) {
         oldValue.value = value
         return true
@@ -172,6 +172,7 @@ function createSetter(shallow = false) {
       // in shallow mode, objects are set as-is regardless of reactive or not
     }
 
+    // target 是不是数组，key 在不在 target 中。
     const hadKey =
       isArray(target) && isIntegerKey(key)
         ? Number(key) < target.length
