@@ -276,8 +276,11 @@ debugger
   // 对 2.x 版本数组的兼容
   // 2.x array mutation watch compat
   if (__COMPAT__ && cb && !deep) {
+    // 暂存 getter 方法
     const baseGetter = getter
+    // 重写
     getter = () => {
+      // 执行暂存的 getter 方法
       const val = baseGetter()
       if (
         isArray(val) &&
@@ -297,7 +300,7 @@ debugger
 
   let cleanup: () => void
   let onInvalidate: InvalidateCbRegistrator = (fn: () => void) => {
-    // 在 effect 上的 onStop 方法上注册 fn 并将 onStop 函数赋值给 cleanup ，这样在嗲用 cleanup 的时候也就可以调用 fn 了
+    // 在 effect 上的 onStop 方法上注册 fn 并将 onStop 函数赋值给 cleanup ，这样在调用 cleanup 的时候也就可以调用 fn 了
     cleanup = runner.options.onStop = () => {
       // 这里会调用 fn
       callWithErrorHandling(fn, instance, ErrorCodes.WATCH_CLEANUP)
