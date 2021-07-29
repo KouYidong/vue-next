@@ -42,14 +42,14 @@
     // console.log(data.a)
 
     // 收集依赖 track()
-    // watchEffect(() => {
-    //   /**
-    //    * data.a // getter
-    //    * data.count = // setter trigger()
-    //    **/
-    //   data.count = data.a + 1
-    //   console.log('count: ', data.count)
-    // })
+    watchEffect(() => {
+      /**
+       * data.a // getter
+       * data.count = // setter trigger()
+       **/
+      data.count = data.a + 1
+      console.log('count: ', data.count)
+    })
     
     // watchEffect(() => {
     //   const count2 = data.count + 1

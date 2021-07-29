@@ -146,6 +146,7 @@ function doWatch(
   { immediate, deep, flush, onTrack, onTrigger }: WatchOptions = EMPTY_OBJ,
   instance = currentInstance
 ): WatchStopHandle {
+  // 警告处理
   if (__DEV__ && !cb) {
     if (immediate !== undefined) {
       warn(
@@ -248,7 +249,7 @@ debugger
        */
       // no cb -> simple effect
       getter = () => {
-        // 当前组件内部实例被卸载 | 未挂载时 return
+        // 当前组件内部实例被卸载时 return
         if (instance && instance.isUnmounted) {
           return
         }
