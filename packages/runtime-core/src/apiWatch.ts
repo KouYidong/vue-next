@@ -317,7 +317,7 @@ debugger
     if (!cb) {
       getter()
     }
-    // 由 watch 调用并且 immediate 为 ture 则立刻调用 fn 并 return
+    // 由 watch 调用并且 immediate 为 ture 则立刻调用 callback 并 return
     else if (immediate) {
       callWithAsyncErrorHandling(cb, instance, ErrorCodes.WATCH_CALLBACK, [
         getter(),
@@ -329,6 +329,8 @@ debugger
   }
 
   let oldValue = isMultiSource ? [] : INITIAL_WATCHER_VALUE
+  // 对 watch 调用的，则执行 cb
+  // 对 watchEffect 则执行 effect
   const job: SchedulerJob = () => {
     if (!runner.active) {
       return
@@ -392,8 +394,9 @@ debugger
    * 调度器，当 effect 被 trigger 触发的时候，会判断有没有调度器，如果有就不会直接调用 effect 本身，而是调用这个调度器
    * 根据 flush 来判断更新时机：
    *  sync: 同步调用
-   *  pre、post: 异步调用，将 job 放到微任务队列中，调用时机交给时间循环
+   *  pre、post: 异步调用，将 job 放到微任务队列中，调用时机交给事件循环
    * 但是 instance 存在但是还没有挂载，这个时候需要直接执行 job
+   * 这里的 job 就是根据是 watch 调用还是 watchEffect 调用来执行对应操作
    */
   let scheduler: ReactiveEffectOptions['scheduler']
   // 同步直接 job
@@ -415,6 +418,7 @@ debugger
     }
   }
 
+  // runner 中包含调度器，调度器中有 job 方法，job 方法中处理了 watch 和 watchEffect 两种传入不同参数的调用。
   const runner = effect(getter, {
     lazy: true,
     onTrack,
