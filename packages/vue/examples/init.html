@@ -15,41 +15,52 @@
 
   <script src="../dist/vue.global.js"></script>
   <script>
-    const { watch, watchEffect, createApp, reactive } = Vue
+    const { ref, watch, watchEffect, createApp, reactive } = Vue
 
     debugger
 
-    const data = reactive({
+    // {_rawValue: 0, _shallow: false, __v_isRef: true, _value: 0, value: 0}
+    // const refVal = ref(0)
+    // {_rawValue: {a: 1, b: 2 }, _shallow: false, __v_isRef: true, _value: {a:1, b: 2}, value: proxy}
+    const refObj = ref({
       a: 1,
-      b: 2,
-      count: 0
+      b: 2
     })
 
-    const arr = [1, 2]
+    console.log(refObj.value.a)
+    refObj.value = 321
 
-    watch((event) => {
-      debugger
-      return data.a
-    }, (newVal, oldVale) => {
-      debugger
-    })
+    // const data = reactive({
+    //   a: 1,
+    //   b: 2,
+    //   count: 0
+    // })
 
-    setTimeout(() => {
-      data.a = 6
-    }, 5000)
+    // const arr = [1, 2]
+
+    // watch((event) => {
+    //   debugger
+    //   return data.a
+    // }, (newVal, oldVale) => {
+    //   debugger
+    // })
+
+    // setTimeout(() => {
+    //   data.a = 6
+    // }, 5000)
 
     // data.a = 2
     // console.log(data.a)
 
     // 收集依赖 track()
-    watchEffect(() => {
-      /**
-       * data.a // getter
-       * data.count = // setter trigger()
-       **/
-      data.count = data.a + 1
-      console.log('count: ', data.count)
-    })
+    // watchEffect(() => {
+    //   /**
+    //    * data.a // getter
+    //    * data.count = // setter trigger()
+    //    **/
+    //   data.count = data.a + 1
+    //   console.log('count: ', data.count)
+    // })
     
     // watchEffect(() => {
     //   const count2 = data.count + 1
